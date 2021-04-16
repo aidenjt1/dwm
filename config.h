@@ -72,7 +72,6 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *termcmd[]  = { "st", NULL };
 static const char *qute[] = { "qutebrowser", NULL };
 static const char *slock[] = { "slock", NULL};
-static const char *scrot[] = { "scrot -e 'mv ~/screenshots'", NULL};
 /* volume keys*/
 static const char *upvol[] = { "pactl", "set-sink-volume", "0", "+10%", NULL };
 static const char *downvol[] = { "pactl", "set-sink-volume", "0", "-10%", NULL };
@@ -121,8 +120,7 @@ static Key keys[] = {
   { 0,                            XF86XK_MonBrightnessUp,    spawn, {.v = brightnessup} },
   { 0,                             XF86XK_MonBrightnessDown, spawn, {.v = brightnessdown} },
 	{ MODKEY,                       XK_w,      spawn,          {.v = qute } },
-	{ MODKEY,                       XK_p,      spawn,          { .v = slock } },   
-	{ MODKEY|ShiftMask,             XK_a,      spawn,          { .v = scrot } },   
+	{ MODKEY,                       XK_p,      spawn,          { .v = slock } },  
 };
 
 
