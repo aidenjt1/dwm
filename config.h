@@ -24,6 +24,9 @@ static const char *colors[][3]      = {
 
 static const char *const autostart[] = {
 	"st", NULL,
+	"slstatus", NULL, 
+        "wal", "-i", "/usr/home/aiden/-dotfiles/wallpaper/wallpaper10.jpg", "-a", "95",
+	"compton", NULL, 	
 	NULL /* terminate */
 };
 
