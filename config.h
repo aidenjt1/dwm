@@ -3,21 +3,8 @@
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
-static const unsigned int gappih    = 15;       /* horiz inner gap between windows */
-static const unsigned int gappiv    = 15;       /* vert inner gap between windows */
-static const unsigned int gappoh    = 20;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov    = 25;       /* vert outer gap between windows and screen edge */
-static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const unsigned int gappx     = 0;
-/* volume keys*/
-static const char *upvol[] = { "/usr/bin/pactl", "set-sink-volume", "0", "+10%", NULL };
-static const char *downvol[] = { "/usr/bin/pactl", "set-sink-volume", "0", "-10%", NULL };
-static const char *mutevol[] = { "/usr/bin/pactl", "set-sink-mute", "0", "toggle", NULL };
-/* backlight */
-static const char *brightnessup[] = { "sudo", "xbacklight", "-inc" "5", NULL };
-static const char *brightnessdown[] = { "sudo", "xbacklight", "-dec", "5", NULL };
 static const char *fonts[]          = { "Nimbus Mono:size=10" };
 static const char dmenufont[]       = "Nimbus Mono:size=10";
 static const char col_gray1[]       = "#11110f";
@@ -27,19 +14,17 @@ static const char col_gray2[]       = "#9fa772";
 static const char col_gray3[]       = "#FFFFFF";
 static const char col_gray4[]       = "#FFFFFF";
 //top bar active border window
-static const char col_cyan[]        = "#C2AC6A";
-static const unsigned int baralpha = 0xd0;
-static const unsigned int borderalpha = OPAQUE;
+static const char col_cyan[]        = "#83766d";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-static const unsigned int alphas[][3]      = {
-	/*               fg      bg        border     */
-	[SchemeNorm] = { OPAQUE, baralpha, borderalpha },
-	[SchemeSel]  = { OPAQUE, baralpha, borderalpha },
+
+static const char *const autostart[] = {
+	"st", NULL,
+	NULL /* terminate */
 };
 
 /* tagging */
@@ -81,9 +66,17 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "urxvt", NULL };
+static const char *termcmd[]  = { "st", NULL };
 static const char *qute[] = { "qutebrowser", NULL };
-static const char *qjackctl[] = { "qjackctl", NULL};
+static const char *slock[] = { "slock", NULL};
+static const char *scrot[] = { "scrot -e 'mv ~/screenshots'", NULL};
+/* volume keys*/
+static const char *upvol[] = { "pactl", "set-sink-volume", "0", "+10%", NULL };
+static const char *downvol[] = { "pactl", "set-sink-volume", "0", "-10%", NULL };
+static const char *mutevol[] = { "pactl", "set-sink-mute", "0", "toggle", NULL };
+/* backlight */
+static const char *brightnessup[] = { "doas", "xbacklight", "-inc" "5", NULL };
+static const char *brightnessdown[] = { "doas", "xbacklight", "-dec", "5", NULL };
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
@@ -119,29 +112,14 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
-	{ 0, XF86XK_AudioLowerVolume, spawn, {.v = downvol} },
-  { 0, XF86XK_AudioMute, spawn, {.v = mutevol }},
-  { 0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol} },
-  { 0, XF86XK_MonBrightnessUp, spawn, {.v = brightnessup} },
-  { 0, XF86XK_MonBrightnessDown, spawn, {.v = brightnessdown} },
-	{ MODKEY,                       XK_w,      spawn,           {.v = qute } },
-	{ MODKEY,                       XK_n,      spawn,           {.v = qjackctl } },
-	{ MODKEY|Mod4Mask,              XK_h,      incrgaps,       {.i = +1 } },
-	{ MODKEY|Mod4Mask,              XK_l,      incrgaps,       {.i = -1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_h,      incrogaps,      {.i = +1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_l,      incrogaps,      {.i = -1 } },
-	{ MODKEY|Mod4Mask|ControlMask,  XK_h,      incrigaps,      {.i = +1 } },
-	{ MODKEY|Mod4Mask|ControlMask,  XK_l,      incrigaps,      {.i = -1 } },
-	{ MODKEY|Mod4Mask,              XK_0,      togglegaps,     {0} },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_0,      defaultgaps,    {0} },
-	{ MODKEY,                       XK_y,      incrihgaps,     {.i = +1 } },
-	{ MODKEY,                       XK_u,      incrihgaps,     {.i = -1 } },
-	{ MODKEY|ControlMask,           XK_y,      incrivgaps,     {.i = +1 } },
-	{ MODKEY|ControlMask,           XK_o,      incrivgaps,     {.i = -1 } },
-	{ MODKEY|Mod4Mask,              XK_y,      incrohgaps,     {.i = +1 } },
-	{ MODKEY|Mod4Mask,              XK_o,      incrohgaps,     {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_y,      incrovgaps,     {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_o,      incrovgaps,     {.i = -1 } }, 
+	{ 0,                            XF86XK_AudioLowerVolume,   spawn, {.v = downvol} },
+  { 0,                            XF86XK_AudioMute,          spawn, {.v = mutevol }},
+  { 0,                            XF86XK_AudioRaiseVolume,   spawn, {.v = upvol} },
+  { 0,                            XF86XK_MonBrightnessUp,    spawn, {.v = brightnessup} },
+  { 0,                             XF86XK_MonBrightnessDown, spawn, {.v = brightnessdown} },
+	{ MODKEY,                       XK_w,      spawn,          {.v = qute } },
+	{ MODKEY,                       XK_p,      spawn,          { .v = slock } },   
+	{ MODKEY|ShiftMask,             XK_a,      spawn,          { .v = scrot } },   
 };
 
 
